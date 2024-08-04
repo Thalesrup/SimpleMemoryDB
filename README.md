@@ -19,5 +19,6 @@ SimpleMemoryDB implementa um banco de dados chave-valor básico em Erlang. O obj
 
 2. **Executar:**
     ```bash
+    erl shell
     simple_memory_db:start().
     simple_memory_server:start().
