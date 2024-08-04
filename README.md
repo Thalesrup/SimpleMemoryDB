@@ -14,8 +14,8 @@ SimpleMemoryDB implementa um banco de dados chave-valor básico em Erlang. O obj
 ## Como usar
 1. **Compilação:**
    ```bash
-  erlc -o ebin simple_memory_db.erl
-  erlc -o ebin simple_memory_serve.erl
+     erlc -o ebin simple_memory_db.erl
+     erlc -o ebin simple_memory_serve.erl
 
 2. **Executar:**
     ```bash
