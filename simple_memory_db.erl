@@ -1,7 +1,5 @@
-%% simple_memory_db.erl
-
 -module(simple_memory_db).
--export([start/0, stop/0, set/2, get/1, del/1, rpush/2, lpop/1, publish/2, subscribe/1, unsubscribe/1]).
+-export([start/0, stop/0, set/2, get/1, del/1, rpush/2, lpop/1, publish/2, subscribe/2, unsubscribe/1, listAll/0]).
 
 -define(SERVER, ?MODULE).
 
@@ -41,6 +39,12 @@ subscribe(Pid, Channel) ->
 unsubscribe(Pid) ->
     ?SERVER ! {unsubscribe, Pid}.
 
+listAll() ->
+    ?SERVER ! {listAll, self()},
+    receive
+        {response, Items} -> Items
+    end.
+
 loop() ->
     loop(dict:new(), dict:new(), dict:new()).
 
@@ -73,8 +77,12 @@ loop(Db, Lists, Subs) ->
                 Subscribers -> loop(Db, Lists, dict:store(Channel, [Pid | Subscribers], Subs))
             end;
         {unsubscribe, Pid} ->
-            NewSubs = dict:map(fun(_, Subs) -> lists:delete(Pid, Subs) end, Subs),
+            NewSubs = dict:map(fun(_, SubscriberList) -> lists:delete(Pid, SubscriberList) end, Subs),
             loop(Db, Lists, NewSubs);
+        {listAll, From} ->
+            AllItems = dict:to_list(Db),
+            From ! {response, AllItems},
+            loop(Db, Lists, Subs);
         stop ->
             ok
     end.
